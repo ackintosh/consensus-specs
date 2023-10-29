@@ -1011,6 +1011,33 @@ Because Phase 0 does not have shards and thus does not have Shard Committees, th
 * Select these subnets based on their node-id as specified by the following `compute_subscribed_subnets(node_id, epoch)` function.
 
 ```python
+def compute_node_id_prefix_map(epoch: Epoch, index: int):
+    permutation_seed = hash(uint_to_bytes(uint64(epoch // EPOCHS_PER_SUBNET_SUBSCRIPTION)))
+    prefix_map = {}
+    for prefix in range(2**ATTESTATION_SUBNET_PREFIX_BITS):
+        permutated_prefix = compute_shuffled_index(
+                prefix,
+                1 << ATTESTATION_SUBNET_PREFIX_BITS,
+                permutation_seed,
+                )
+        prefix_map[permutated_prefix] = prefix
+    return prefix_map
+
+def compute_subscribed_subnet_test(node_id: NodeID, epoch: Epoch, index: int) -> SubnetID:
+    node_id_prefix = node_id >> (NODE_ID_BITS - ATTESTATION_SUBNET_PREFIX_BITS)
+    #print('node_id_prefix')
+    #print(node_id_prefix)
+    #print('1 << ATTESTATION_SUBNET_PREFIX_BITS')
+    #print(1 << ATTESTATION_SUBNET_PREFIX_BITS)
+    #node_offset = node_id % EPOCHS_PER_SUBNET_SUBSCRIPTION
+    permutation_seed = hash(uint_to_bytes(uint64(epoch // EPOCHS_PER_SUBNET_SUBSCRIPTION)))
+    permutated_prefix = compute_shuffled_index(
+        node_id_prefix,
+        1 << ATTESTATION_SUBNET_PREFIX_BITS,
+        permutation_seed,
+    )
+    return SubnetID((permutated_prefix + index) % ATTESTATION_SUBNET_COUNT)
+
 def compute_subscribed_subnet(node_id: NodeID, epoch: Epoch, index: int) -> SubnetID:
     node_id_prefix = node_id >> (NODE_ID_BITS - ATTESTATION_SUBNET_PREFIX_BITS)
     node_offset = node_id % EPOCHS_PER_SUBNET_SUBSCRIPTION

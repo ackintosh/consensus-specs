@@ -484,10 +484,44 @@ def test_get_aggregate_and_proof_signature(spec, state):
     )
 
 
+@with_all_phases
+@spec_test
+@single_phase
+def test_compute_node_id_prefix(spec):
+    print('test_compute_node_id_prefix')
+    rng = random.Random(1111)
+    #node_id = rng.randint(0, 2**256 - 1)
+    epoch = rng.randint(0, 2**64 - 1)
+    #subnets = spec.compute_subscribed_subnets(node_id, epoch)
+    prefix_map = spec.compute_node_id_prefix_map(epoch, 0)
+    print('prefix_map', prefix_map)
+
+    node_id = rng.randint(0, 2**256 - 1)
+    subnet = spec.compute_subscribed_subnet_test(node_id, epoch, 0)
+    prefix = node_id >> 250
+    print('prefix', prefix, 'subnet', subnet)
+    print('prefix_map', prefix_map[subnet])
+
+@with_all_phases
+@spec_test
+@single_phase
+def test_compute_subscribed_subnet_test(spec):
+    print('test_compute_subscribed_subnet_test')
+    rng = random.Random(1111)
+    node_id = rng.randint(0, 2**256 - 1)
+    epoch = rng.randint(0, 2**64 - 1)
+    #subnets = spec.compute_subscribed_subnets(node_id, epoch)
+    subnet = spec.compute_subscribed_subnet_test(node_id, epoch, 0)
+    print(subnet)
+
 def run_compute_subscribed_subnets_arguments(spec, rng=random.Random(1111)):
     node_id = rng.randint(0, 2**256 - 1)
     epoch = rng.randint(0, 2**64 - 1)
     subnets = spec.compute_subscribed_subnets(node_id, epoch)
+    print(node_id)
+    print(epoch)
+    print(subnets)
+    print(spec.config.SUBNETS_PER_NODE)
     assert len(subnets) == spec.config.SUBNETS_PER_NODE
 
 
@@ -495,6 +529,7 @@ def run_compute_subscribed_subnets_arguments(spec, rng=random.Random(1111)):
 @spec_test
 @single_phase
 def test_compute_subscribed_subnets_random_1(spec):
+    print('aaaaaaa')
     rng = random.Random(1111)
     run_compute_subscribed_subnets_arguments(spec, rng)
 
