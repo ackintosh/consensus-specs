@@ -488,7 +488,7 @@ def test_get_aggregate_and_proof_signature(spec, state):
 @spec_test
 @single_phase
 def test_compute_node_id_prefix(spec):
-    print('test_compute_node_id_prefix')
+    print('test_compute_node_id_prefix **')
     rng = random.Random(1111)
     #node_id = rng.randint(0, 2**256 - 1)
     epoch = rng.randint(0, 2**64 - 1)
